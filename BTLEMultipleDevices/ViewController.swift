@@ -10,6 +10,8 @@ import UIKit
 import CoreBluetooth
 
 
+// data service UUID: A495FF10-C5B1-4B44-B512-1370F02D74DE
+
 class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate, UITableViewDelegate, UITableViewDataSource{
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var updates: UITextView!
@@ -22,6 +24,8 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
         // Start up the CBCentralManager
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        updates.text = ""
+
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -38,6 +42,13 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         // Dispose of any resources that can be recreated.
     }
 
+    func update( withString string: String ) {
+        DispatchQueue.main.async {
+            self.updates.text = self.updates.text + "\n" + string
+            let range = NSMakeRange((self.updates.text as NSString).length-1, 1)
+            self.updates.scrollRangeToVisible(range)
+        }
+    }
     
     @IBAction func startScanningAction(_ sender: Any) {
         print("Start scan")
@@ -95,11 +106,21 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
     //MARK: - CBCentralManagerDelegate methods
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Connected \(String(describing: peripheral.name)) UUID \(peripheral.identifier.uuidString)")
+
+        let string:String = "Connected to \(peripheral)."
+        print(string)
+        self.update(withString: string)
+        peripheral.delegate = self
+        peripheral.discoverServices(nil)
 
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("disconnected from \(peripheral). (\(error!.localizedDescription))")
+        let string:String = "disconnected from \(peripheral)."
+        print(string)
+        self.update(withString: string)
 
         cleanup(peripheral: peripheral)
     }
@@ -111,17 +132,22 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        print("Discovered \(String(describing: peripheral.name)) at \(RSSI)")
 
         // Ok, it's in range - have we already seen it?
 
         if  peripheral.name == "Bean+"  && peripheral.state == .disconnected  {
+            let string:String = "Discovered \(String(describing: peripheral.name)) UUID \(peripheral.identifier.uuidString) at \(RSSI)"
+            print(string)
+
             // Save a local copy of the peripheral, so CoreBluetooth doesn't get rid of it
             discoveredPeripherals.insert(peripheral, at:0 )
 
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
+
+            self.update(withString: string)
+
             // And connect
             print("Connecting to peripheral \(peripheral)")
 
@@ -133,6 +159,58 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
 
     }
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        guard error == nil else {
+            print("Error discovering services: \(error!.localizedDescription)")
+            cleanup(peripheral: peripheral)
+            return
+        }
+
+        guard let services = peripheral.services else {
+            return
+        }
+
+        // Discover the characteristic we want...
+
+        // Loop through the newly filled peripheral.services array, just in case there's more than one.
+        for service in services {
+            let string:String = "services\(service)"
+            print(string)
+            self.update(withString: string)
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        // Deal with errors (if any)
+        guard error == nil else {
+            print("Error discovering services: \(error!.localizedDescription)")
+            cleanup(peripheral: peripheral)
+            return
+        }
+
+
+        guard let characteristics = service.characteristics else {
+            return
+        }
+
+        // Again, we loop through the array, just in case.
+        for characteristic in characteristics {
+            let string:String = "characteristic \(characteristic)"
+            print(string)
+            self.update(withString: string)
+
+//            // And check if it's the right one
+//            if characteristic.uuid.isEqual(transferCharacteristicUUID) {
+//                // If it is, subscribe to it
+//                peripheral.setNotifyValue(true, for: characteristic)
+//            }
+        }
+        // Once this is complete, we just need to wait for the data to come in.
+    }
+
+
     // MARK: - Table view data source
     func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections

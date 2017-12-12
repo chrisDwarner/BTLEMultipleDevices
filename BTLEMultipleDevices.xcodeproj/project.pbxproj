@@ -17,6 +17,7 @@
 		831B64AE1FE047E000F93470 /* BTLEMultipleDevicesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831B64AD1FE047E000F93470 /* BTLEMultipleDevicesUITests.swift */; };
 		831B64BD1FE047F600F93470 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 831B64BC1FE047F600F93470 /* CoreBluetooth.framework */; };
 		831B64BF1FE0480200F93470 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 831B64BE1FE0480200F93470 /* QuartzCore.framework */; };
+		831B64C11FE06B8100F93470 /* Definitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831B64C01FE06B8100F93470 /* Definitions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		831B64AF1FE047E000F93470 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		831B64BC1FE047F600F93470 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		831B64BE1FE0480200F93470 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		831B64C01FE06B8100F93470 /* Definitions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Definitions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				831B64961FE047E000F93470 /* LaunchScreen.storyboard */,
 				831B64991FE047E000F93470 /* Info.plist */,
 				831B64911FE047E000F93470 /* BTLEMultipleDevices.xcdatamodeld */,
+				831B64C01FE06B8100F93470 /* Definitions.swift */,
 			);
 			path = BTLEMultipleDevices;
 			sourceTree = "<group>";
@@ -278,6 +281,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				831B64C11FE06B8100F93470 /* Definitions.swift in Sources */,
 				831B648D1FE047E000F93470 /* ViewController.swift in Sources */,
 				831B64931FE047E000F93470 /* BTLEMultipleDevices.xcdatamodeld in Sources */,
 				831B648B1FE047E000F93470 /* AppDelegate.swift in Sources */,
